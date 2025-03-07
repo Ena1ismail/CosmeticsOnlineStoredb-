@@ -1,0 +1,55 @@
+1.Retrieve Items by Category
+
+SELECT 
+    i.ItemID,
+    i.Name AS ItemName,
+    i.Cost AS Price,
+    i.HasDiscount,
+    i.DiscountAmount
+FROM Item i
+INNER JOIN LookupItem li ON i.CategoryID = li.LookupItemID
+WHERE li.LookupItemID = @CategoryID;
+
+
+
+2.Search Items
+
+SELECT 
+    ItemID,
+    Name AS ItemName,
+    Description,
+    Cost AS Price,
+    HasDiscount
+FROM Item
+WHERE Name LIKE '%' + @Keyword + '%'
+   OR Description LIKE '%' + @Keyword + '%';
+
+
+
+3.Customer Purchase History
+
+SELECT 
+    o.OrderID,
+    i.Name AS ItemName,
+    oi.Quantity,
+    oi.ItemPrice,
+    oi.Subtotal,
+    o.CreateDate AS OrderDate
+FROM [Order] o
+INNER JOIN OrderItem oi ON o.OrderID = oi.OrderID
+INNER JOIN Item i ON oi.ItemID = i.ItemID
+WHERE o.UserID = @UserID
+ORDER BY o.CreateDate DESC;
+
+4.Top-Selling Products
+
+SELECT 
+    i.ItemID,
+    i.Name AS ItemName,
+    SUM(oi.Quantity) AS TotalSold
+FROM OrderItem oi
+INNER JOIN Item i ON oi.ItemID = i.ItemID
+INNER JOIN [Order] o ON oi.OrderID = o.OrderID
+WHERE o.CreateDate BETWEEN @StartDate AND @EndDate
+GROUP BY i.ItemID, i.Name
+ORDER BY TotalSold DESC;

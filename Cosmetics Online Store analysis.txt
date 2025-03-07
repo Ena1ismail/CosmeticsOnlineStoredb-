@@ -1,0 +1,121 @@
+ scope of the project :Cosmetics online store system
+ The Mandatory object  : Admins (managers),Clients (customers),Items 
+  The Software Type : Costumized software
+  the functionality follow in the system : prototyping and interviews
+ 
+
+
+
+analysis 
+****System Admin**** 
+// admin account
+ 
+1. login into admin dashboard by(EMAIL, PASS)
+2. edit admin profile (edite email ,pass ,profile pic and phone number)
+// product(item) managment 
+
+1. admin will be able to create item by (  name , description , image , 
+category , brand , quantity , cost , price , is have discount , discount 
+amount each item)
+2.admin can edit existing  product 
+3. admin can active or deactivate proudct 
+4. admin will be able to explore item by (  name , description , image , 
+category , price , is have discount , discount 
+amount each item)
+5.admin will be able to explore items detiels  (  name , description , image , 
+category , price , is have discount , discount 
+amount each item)
+
+// manage categories and brands 
+
+1. admin should ne able to add product categroes by (category name ),edit , delete  
+2. admin should be able to add  brands  assocciatefd with the product by (brand name ) and manage it 
+
+//Admin can Manage Ingredients
+1. admin can Add new ingredients and specify their quantities in products by ( name and quantity)
+
+
+// admin should manage discount and offers 
+
+1. admin can  Apply discounts to specific products or entire categories
+2. admin can remove and update discount as needed 
+// admin should manage customers
+1. admin should explore cleints by(email , password , profile image ,phone number)
+2. admin should block or reactive costemer account when nesserary 
+// Admin should handel costumer order 
+
+1. admin can review customers order by ( costumername ,TotalAmount ,order date , order statues ,order number , order item,Quantity, item price ,Rating)
+2. admin can update order statues  (processing, shipped, completed, canceled)
+
+
+// admin should Process Product Requests:
+1. review product request by ( customer name , item name , request date ,
+1. admin can approve or reject requst and providing feedback if rejected
+
+// admin should Generate Reports:
+
+1. Create monthly sales reports
+2.analyze top selling prduct 
+
+
+
+*****client (costumer)****
+// client account 
+1. client should create new account by (email,passeord,profile pic,phone number)
+// client can explore pruduct by (  name ,  image , 
+category , price  )
+1. client can explore  product list categorized  
+2. client can view deiled product information (description, image, price, discount, brand , ingredients,is have discount , discount 
+amount each item)
+
+//  sreach for a pruduct 
+1. client can sreach for a pruduct  by( product name category , description ,brand)
+// manage shopping cart 
+1. client can add product to the cart 
+2. client can modify quantites or remove items before confirming the purchase 
+// create orders 
+1. confirm the order and complete the purchase 
+2. client can rate his orderitem 
+
+//manage wishlist
+1.client can add and remove favarite  products to wishlist  
+// submit product requestd 
+1. client can  request the addition of  products not aavaliable in the store
+2. client can Track the request status (under review, approved, rejected) 
+
+// view order history 
+1 client can review previous order
+//logout 
+1. clent can log out from the system 
+
+
+summerizing system objects 
+for all intenites ( id ,createdby,updated by,created date ,updated date)
+1.Admin ( Full Name ,Email,Password ,ProfileImage ,PhoneNumber)
+2.client  ( Full Name ,Email,Password ,ProfileImage ,PhoneNumber)
+3.item (Name,Description ,Image ,Category ,Brand  ,Quantity ,Cost ,Price ,HasDiscount ,DiscountAmount,rate )
+4.ItemIngredient(IngredientID(ingredient name),ItemID ,Quantity)
+5.Order(OrderID ,OrderDate,TotalAmount,statues)
+6.OrderItem (OrderID ,ItemID ,Quantity,ItemPrice,DiscountApplied ,Rating (Optional))
+7.Wishlist (UserID ,ItemID )
+8.ItemRequest(Username ,QuantityRequested,RequestDate,ProductName,Description )
+9.ingredients(ingredient Id,ingredientName,Quantity)
+Generization and specification
+1, Admin and Client ----> USER
+2. user ,item,ItemIngredient,Order,OrderItem,Wishlist,ingredients,ItemRequest---->ParentIntety
+
+Define Relationships 
+1. inhertance
+2. composition 
+ -User (Client)	places	Order	(One-to-Many)A client can place multiple orders, but each order belongs to one client
+ -Order contains	OrderItem  	(One-to-Many)Each order can contain multiple order items.
+ -Item	appears in	OrderItem   (One-to-Many)Each item can appear in multiple order items.==
+ -Client	creates	Wishlist	(One-to-Many)Each client can have one wishlist==
+ -Wishlist	contains	Item	(Many-to-Many)	A wishlist can contain multiple items, and an item can be in multiple wishlists.
+ -Item	composed of	ItemIngredient (One-to-Many) An item can have multiple ingredients 
+ -ItemIngredient refers to Ingredient(Many-to-One)	Each ItemIngredient entry refers to a single ingredient.==
+ -Client	submits	ItemRequest	(One-to-Many	)A client can submit multiple item requests.
+ -ItemRequest requests Item   (Many-to-One)	Each request refers to a single item being requested
+  -ingredients 
+
+

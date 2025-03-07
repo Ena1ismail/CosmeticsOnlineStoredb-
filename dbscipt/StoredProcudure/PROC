@@ -1,0 +1,139 @@
+
+
+stored procedure 
+1. Add Item TO Order 
+CREATE PROCEDURE AddItemToOrder
+    @OrderID INT,
+    @ItemID INT,
+    @Quantity INT,
+    @CreatedBy NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @ItemPrice DECIMAL(10,2);
+    DECLARE @StockAvailable INT;
+    DECLARE @Subtotal DECIMAL(10,2);
+
+    SELECT @StockAvailable = Quantity, @ItemPrice = Cost
+    FROM Item
+    WHERE ItemID = @ItemID;
+
+   
+    IF @StockAvailable < @Quantity
+    BEGIN
+        PRINT 'Error: Insufficient stock for this item!';
+        RETURN;
+    END
+
+  
+    SET @Subtotal = @Quantity * @ItemPrice;
+
+ 
+    INSERT INTO OrderItem (OrderID, ItemID, Quantity, ItemPrice, Subtotal, CreatedBy, CreateDate, UpdatedBy, UpdateDate)
+    VALUES (@OrderID, @ItemID, @Quantity, @ItemPrice, @Subtotal, @CreatedBy, GETDATE(), @CreatedBy, GETDATE());
+
+
+    UPDATE Item
+    SET Quantity = Quantity - @Quantity
+    WHERE ItemID = @ItemID;
+
+    PRINT 'Item successfully added to order!';
+END;
+
+
+
+ 2.
+ 
+ CREATE PROCEDURE ManageDiscounts
+    @ItemID INT = NULL,
+    @CategoryID INT = NULL,
+    @DiscountAmount DECIMAL(10,2),
+    @UpdatedBy NVARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+   
+    IF @ItemID IS NULL AND @CategoryID IS NULL
+    BEGIN
+        PRINT 'Error: You must provide either an ItemID or a CategoryID.';
+        RETURN;
+    END
+
+    
+    IF @DiscountAmount < 0
+    BEGIN
+        PRINT 'Error: Discount amount must be a positive value.';
+        RETURN;
+    END
+
+    
+    IF @ItemID IS NOT NULL
+    BEGIN
+      
+        IF EXISTS (SELECT 1 FROM Item WHERE ItemID = @ItemID AND Cost < @DiscountAmount)
+        BEGIN
+            PRINT 'Error: Discount amount cannot exceed the product cost.';
+            RETURN;
+        END
+
+        UPDATE Item
+        SET DiscountAmount = @DiscountAmount,
+            HasDiscount = CASE WHEN @DiscountAmount > 0 THEN 1 ELSE 0 END,
+            UpdatedBy = @UpdatedBy,
+            UpdateDate = GETDATE()
+        WHERE ItemID = @ItemID;
+
+        PRINT 'Discount successfully updated for the item.';
+    END
+
+
+    IF @CategoryID IS NOT NULL
+    BEGIN
+        
+        IF EXISTS (SELECT 1 FROM Item WHERE CategoryID = @CategoryID AND Cost < @DiscountAmount)
+        BEGIN
+            PRINT 'Error: Discount amount cannot exceed the cost of any product in this category.';
+            RETURN;
+        END
+
+        UPDATE Item
+        SET DiscountAmount = @DiscountAmount,
+            HasDiscount = CASE WHEN @DiscountAmount > 0 THEN 1 ELSE 0 END,
+            UpdatedBy = @UpdatedBy,
+            UpdateDate = GETDATE()
+        WHERE CategoryID = @CategoryID;
+
+        PRINT 'Discount successfully updated for all items in the category.';
+    END
+END;
+
+ 
+ 
+ 
+ 
+ 
+ 
+3.Generate Sales Report
+CREATE PROCEDURE GenerateSalesReport
+    @StartDate DATE,
+    @EndDate DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        i.ItemID,
+        i.Name AS ItemName,
+        SUM(oi.Quantity) AS TotalQuantitySold,
+        SUM(oi.Subtotal) AS TotalRevenue,
+        MIN(o.CreateDate) AS FirstSaleDate,
+        MAX(o.CreateDate) AS LastSaleDate
+    FROM OrderItem oi
+    INNER JOIN Item i ON oi.ItemID = i.ItemID
+    INNER JOIN [Order] o ON oi.OrderID = o.OrderID
+    WHERE o.CreateDate BETWEEN @StartDate AND @EndDate
+    GROUP BY i.ItemID, i.Name
+    ORDER BY TotalRevenue DESC;
+END;

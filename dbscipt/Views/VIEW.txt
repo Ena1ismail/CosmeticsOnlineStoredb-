@@ -1,0 +1,41 @@
+1. Active Item view
+
+
+ CREATE OR ALTER VIEW ActiveItemsView AS
+SELECT 
+    i.ItemID,
+    i.Name AS ItemName,
+    liCategory.Name AS Category,  
+    liBrand.Name AS Brand,       
+    i.Cost AS Price,
+    i.DiscountAmount
+FROM Item i
+INNER JOIN LookupItem liCategory ON i.CategoryID = liCategory.LookupItemID
+INNER JOIN LookupItem liBrand ON i.BrandID = liBrand.LookupItemID
+WHERE i.Quantity > 0;
+
+
+
+2. Customer Wishlist view 
+CREATE  VIEW CustomerWishlistView AS
+SELECT 
+    w.UserID,
+    u.FullName AS CustomerName,
+    i.ItemID,
+    i.Name AS ItemName,
+    w.Quantityitems AS Quantity
+FROM Wishlist w
+INNER JOIN [User] u ON w.UserID = u.UserID
+INNER JOIN Item i ON w.ItemID = i.ItemID;
+
+
+3.Sales summary view 
+
+
+CREATE OR ALTER VIEW SalesSummaryView AS
+SELECT 
+    FORMAT(o.CreateDate, 'yyyy-MM') AS MonthYear,  
+    COUNT(o.OrderID) AS TotalOrders, 
+    SUM(o.TotalAmount) AS TotalRevenue  
+FROM [Order] o
+GROUP BY FORMAT(o.CreateDate, 'yyyy-MM');
